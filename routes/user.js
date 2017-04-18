@@ -23,7 +23,8 @@ router.post('/getUserInfo', function(req, res, next) {
             'nickname':user.get('nickname') == null ? '' : user.get('nickname'),
             'realname':user.get('username') == null ? '' : user.get('username'),
             'sex':user.get('sex') == null ? '0' : user.get('sex'),
-            'age':user.get('age') == null ? '0' : user.get('age')
+            'age':user.get('age') == null ? '0' : user.get('age'),
+            'point':user.get('point') == null ? '0' : user.get('point')
 
         };
 
