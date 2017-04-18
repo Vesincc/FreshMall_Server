@@ -13,7 +13,7 @@ router.post('/getMessage', function(req, res, next) {
     var messageType = req.body.type;
     var uid = req.body.uid;
 
-    if (messageType == 1) {
+    if (messageType == 1) {  //系统
 
         var query = new AV.Query(Message);
         query.equalTo('type', messageType);
@@ -33,7 +33,7 @@ router.post('/getMessage', function(req, res, next) {
                 var temp = {
 
                     'id' : results[i].get('objectId') == null ? '' : results[i].get('objectId'),
-                    'idRead' : results[i].get('isRead') == null ? '' : results[i].get('isRead'),
+                    'isRead' : results[i].get('isRead') == null ? '' : results[i].get('isRead'),
                     'title' : results[i].get('title') == null ? '' : results[i].get('title'),
                     'content' : results[i].get('content') == null ? '' : results[i].get('content'),
                     'time' : timeString == null ? '' : timeString
@@ -137,6 +137,50 @@ router.post('/getMessage', function(req, res, next) {
         res.send(wrap);
 
     }
+
+});
+
+router.post('/messageDetail', function(req, res, next) {
+
+    var uid = req.body.uid;
+    var id = req.body.id;
+
+    var query = new AV.Query(Message);
+    query.get(id).then(function (message) {
+
+        message.set('isRead', '1');
+        message.save().then(function (message) {
+
+            var time = message.get('createdAt');
+            var date = new Date(time);
+            var localeDateString = date.toLocaleDateString();
+            var localeTimeString = date.toLocaleTimeString();
+            var timeString = localeDateString + ' ' +localeTimeString;
+
+            var data = {
+
+                'id' : message.get('objectId'),
+                'title' : message.get('title'),
+                'content' : message.get('content'),
+                'time' : timeString
+
+            }
+
+            var wrap = {
+
+                'code' : 200,
+                'data' : data,
+                'message' : ''
+
+            };
+
+            res.send(wrap);
+
+        });
+
+
+    });
+
 
 });
 

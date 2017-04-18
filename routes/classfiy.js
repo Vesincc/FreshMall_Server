@@ -69,7 +69,10 @@ router.post('/getClassfiyList', function(req, res, next) {
             }
 
 
+
         }
+
+
 
         var data = [];
 
@@ -117,6 +120,8 @@ router.post('/getClassfiyList', function(req, res, next) {
             'list' : classfiy5
 
         });
+
+
 
         return data;
 

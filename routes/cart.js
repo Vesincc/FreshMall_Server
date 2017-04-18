@@ -31,9 +31,12 @@ router.post('/getCart', function(req, res, next) {
 
                     'cid':results[i].get('objectId'),
                     'gid':tempGoods.get('objectId'),
+                    'title' : tempGoods.get('name'),
+                    'cover' : tempGoods.get('topImage'),
                     'content':tempGoods.get('content'),
                     'price':tempGoods.get('price'),
-                    'number':results[i].get('number')
+                    'number':results[i].get('number'),
+                    'isSelected' : results[i].get('isSelected')
 
                 };
 
@@ -82,7 +85,7 @@ router.post('/moveFromCart', function(req, res, next) {
 
                 var tempId = results[i].get('objectId');
 
-                console.log(tempId == cid);
+                // console.log(tempId == cid);
 
                 if (tempId == cid) {
 
@@ -170,7 +173,7 @@ router.post('/changeNumber', function(req, res, next) {
 
                 var tempId = results[i].get('objectId');
 
-                console.log(tempId == cid);
+                // console.log(tempId == cid);
 
                 if (tempId == cid) {
 
@@ -234,6 +237,128 @@ router.post('/changeNumber', function(req, res, next) {
 
 
         });
+
+    });
+
+});
+
+router.post('/changeSelected', function(req, res, next) {
+
+    var cid = req.body.cid;
+    var uid = req.body.uid;
+    var isSelected = req.body.isSelected;
+
+    var query = new AV.Query(User);
+    query.get(uid).then(function (user) {
+
+        var relation = user.relation('cart');
+        var query = relation.query();
+        query.include('goods');
+        query.find().then(function (results) {
+
+            var flag = 0;
+
+            for (var i = 0; i < results.length; i++) {
+
+                var tempId = results[i].get('objectId');
+
+                // console.log(tempId == cid);
+
+                if (tempId == cid) {
+
+                    flag ++;
+
+                }
+
+            }
+
+            if (flag != 0) {
+
+                var query = new AV.Query(Cart);
+                query.get(cid).then(function (cart) {
+
+                    cart.set('isSelected', isSelected);
+                    cart.save().then(function (success) {
+
+                        var wrap = {
+
+                            'code' : 200,
+                            'data' : '',
+                            'message' : '操作成功'
+
+                        };
+
+                        res.send(wrap);
+
+                    }, function (error) {
+
+                        var wrap = {
+
+                            'code' : 102,
+                            'data' : '',
+                            'message' : '操作失败'
+
+                        };
+
+                        res.send(wrap);
+
+                    });
+
+                });
+
+
+
+            } else {
+
+                var wrap = {
+
+                    'code' : 101,
+                    'data' : '',
+                    'message' : '没有该数据'
+
+                };
+
+                res.send(wrap);
+
+
+            }
+
+
+
+        });
+
+    });
+
+});
+
+router.post('/allPick', function(req, res, next) {
+
+    var uid = req.body.uid;
+    var type = req.body.type; //1:全选 0：全部取消
+
+    var query = new AV.Query(User);
+    query.get(uid).then(function (user) {
+
+        var relation = user.relation('cart');
+        var query = relation.query();
+        query.include('goods');
+        query.find().then(function (results) {
+
+            allPick(results, 0, res, type);
+
+        });
+
+    }, function (error) {
+
+        var wrap = {
+
+            'code' : 100,
+            'data' : '',
+            'message' : '未找到该用户'
+
+        };
+
+        res.send(wrap);
 
     });
 
@@ -342,3 +467,36 @@ router.post('/addToCart', function(req, res, next) {
 });
 
 module.exports = router;
+
+function allPick(all, index, res, type) {
+
+    if (index >= all.length) {
+
+        var wrap = {
+
+            'code' : 200,
+            'data' : '',
+            'message' : '操作成功'
+
+        };
+
+        res.send(wrap);
+
+
+    } else {
+
+        var temp = all[index];
+
+        temp.set('isSelected', type);
+        temp.save().then(function (temp) {
+
+            allPick(all, index+1, res, type);
+
+        });
+
+
+    }
+
+
+
+}

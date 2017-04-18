@@ -62,6 +62,11 @@ router.post('/saveUserInfo', function(req, res, next) {
     var sex = req.body.sex;
     var age = req.body.age;
 
+    console.log(nickname);
+    console.log(realname);
+    console.log(sex);
+    console.log(age);
+
     var query = new AV.Query(User);
     query.get(uid).then(function (user) {
 

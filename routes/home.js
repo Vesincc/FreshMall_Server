@@ -63,7 +63,8 @@ router.post('/getHotGoodsList', function(req, res, next) {
                 'id':temp.get('objectId'),
                 'title':temp.get('name'),
                 'price':temp.get('price'),
-                'content':temp.get('content')
+                'content':temp.get('content'),
+                'cover' : temp.get('topImage')
 
             };
 
@@ -82,6 +83,11 @@ router.post('/getHotGoodsList', function(req, res, next) {
         res.send(wrap);
 
     });
+
+});
+
+router.post('/search', function(req, res, next) {
+
 
 });
 

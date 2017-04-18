@@ -43,6 +43,8 @@ app.use('/cart', require('./routes/cart'));
 app.use('/user', require('./routes/user'));
 app.use('/message', require('./routes/message'));
 app.use('/setting', require('./routes/setting'));
+app.use('/mine', require('./routes/mine'));
+app.use('/goods', require('./routes/goods'));
 
 app.use(function(req, res, next) {
   // 如果任何一个路由都没有返回响应，则抛出一个 404 异常给后续的异常处理器

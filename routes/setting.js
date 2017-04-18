@@ -7,6 +7,7 @@ var AV = require('leanengine');
 var Goods = AV.Object.extend('Goods');
 var User = AV.Object.extend('_User');
 var Address = AV.Object.extend('Address');
+var FeelBack = AV.Object.extend('FeelBack');
 
 router.post('/getAddress', function(req, res, next) {
 
@@ -67,6 +68,42 @@ router.post('/getAddress', function(req, res, next) {
 
 });
 
+router.post('/getAddressDetail', function(req, res, next) {
+
+    var uid = req.body.uid;
+    var aid = req.body.aid;
+
+    var query = new AV.Query(Address);
+    query.get(aid).then(function (address) {
+
+        var data = {
+
+            'id' : address.get('objectId') == null ? '' : address.get('objectId'),
+            'name' : address.get('receiveName') == null ? '' : address.get('receiveName'),
+            'phone' : address.get('phoneNumber') == null ? '' : address.get('phoneNumber'),
+            'area' : address.get('chooseArea') == null ? '' : address.get('chooseArea'),
+            'detail' : address.get('detailAddress') == null ? '' : address.get('detailAddress'),
+            'isDefault' : address.get('isDefault') == null ? '' : address.get('isDefault')
+
+        }
+
+
+        var wrap = {
+
+            'code' : 200,
+            'data' : data,
+            'message' : ''
+
+        };
+
+        res.send(wrap);
+
+
+    });
+
+
+});
+
 router.post('/setDefaultAddress', function(req, res, next) {
 
     var uid = req.body.uid;
@@ -106,74 +143,54 @@ router.post('/setDefaultAddress', function(req, res, next) {
 
             } else {
 
-                var flag = 0;
 
-                for (var i = 0; i < results.length; i++) {
+                    for (var i = 0; i < results.length; i++) {
 
-                    if (results[i].get('isDefault') == '1') {
+                        if (results[i].get('objectId') == aid) {
 
-                        flag ++;
+                            results[i].set('isDefault', '1');
 
-                        results[i].set('isDefault', '0');
+                            results[i].save().then(function (success) {
 
-                        results[i].save().then(function (success) {
+                                for (var j = 0; j < results.length; j++) {
 
-                            for (var i = 0; i < results.length; i++) {
+                                    if (results[j].get('isDefault') == '1' && results[j].get('objectId') != aid) {
 
-                                if (results[i].get('objectId') == aid) {
+                                        results[j].set('isDefault', '0');
 
-                                    results[i].set('isDefault', '1');
+                                        results[j].save().then(function (success) {
 
-                                    results[i].save().then(function (success) {
+                                            var wrap = {
 
-                                        var wrap = {
+                                                'code': 200,
+                                                'data': '',
+                                                'message': '操作成功'
 
-                                            'code': 200,
-                                            'data': '',
-                                            'message': '操作成功'
+                                            };
 
-                                        };
+                                            res.send(wrap);
 
-                                        res.send(wrap);
+                                        });
 
-                                    });
+                                    }
 
                                 }
 
-                            }
+                                var wrap = {
 
-                        });
+                                    'code': 200,
+                                    'data': '',
+                                    'message': '操作成功'
+
+                                };
+
+                                res.send(wrap);
+
+                            });
+
+                        }
 
                     }
-
-                }
-
-                if (flag == 0) {
-
-                    var query = new AV.Query(Address);
-                    query.get(aid).then(function (address) {
-
-                        address.set('isDefault', 1);
-
-                        address.save().then(function (success) {
-
-                            var wrap = {
-
-                                'code': 200,
-                                'data': '',
-                                'message': '操作成功'
-
-                            };
-
-                            res.send(wrap);
-
-                        });
-
-                    });
-
-
-
-                }
 
 
             }
@@ -595,6 +612,31 @@ router.post('/changePassword', function(req, res, next) {
         res.send(wrap);
 
     });
+
+});
+
+router.post('/feelBack', function(req, res, next) {
+
+    var uid = req.body.uid;
+    var content = req.body.content;
+
+    var feelback = new FeelBack();
+    feelback.set('uid', uid);
+    feelback.set('content', content);
+    feelback.save().then(function (success) {
+
+        var wrap = {
+
+            'code' : 200,
+            'data' : '',
+            'message' : '操作成功'
+
+        };
+
+        res.send(wrap);
+
+    });
+
 
 });
 
