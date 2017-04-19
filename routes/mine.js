@@ -455,6 +455,81 @@ router.post('/back', function(req, res, next) {
 
 });
 
+router.post('/backForBuy', function(req, res, next) {
+
+    var uid = req.body.uid;
+
+    var query = new AV.Query(User);
+    query.get(uid).then(function (user) {
+
+        var query = new AV.Query(Order);
+        query.equalTo('status', '5');  //退款 售后
+
+        var query2 = new AV.Query(Order);
+        query2.equalTo('uid', user);
+
+        var query3 = AV.Query.and(query, query2);
+        query3.include('goods');
+        query3.find().then(function (results) {
+
+            console.log(results);
+
+            var data = [];
+
+            for (var i = 0; i < results.length; i++) {
+
+                var goods = results[i].get('goods');
+
+                var time = results[i].get('createdAt');
+                var date = new Date(time);
+                var localeDateString = date.toLocaleDateString();
+                var localeTimeString = date.toLocaleTimeString();
+                var timeString = localeDateString + ' ' +localeTimeString;
+
+                var temp = {
+
+                    'oid' : results[i].get('objectId'),
+                    'cover' : goods.get('topImage') == null ? '' : goods.get('topImage'),
+                    'title': goods.get('name') == null ? '' : goods.get('name'),
+                    'price' : goods.get('price') == null ? '' : goods.get('price'),
+                    'time' : timeString
+
+                }
+
+                data.push(temp);
+
+            }
+
+            var wrap = {
+
+                'code' : 200,
+                'data' : data,
+                'message' : ''
+
+            };
+
+            res.send(wrap);
+
+        });
+
+
+
+    }, function (error) {
+
+        var wrap = {
+
+            'code' : 100,
+            'data' : '',
+            'message' : '未找到该用户'
+
+        };
+
+        res.send(wrap);
+
+    });
+
+});
+
 router.post('/willGet', function(req, res, next) {
 
     var uid = req.body.uid;
@@ -616,6 +691,7 @@ router.post('/addComment', function(req, res, next) {
     var oid = req.body.oid;
     var uid = req.body.uid;
     var content = req.body.content;
+    var number = req.body.number;
 
     var query = new AV.Query(User);
     query.get(uid).then(function (user) {
@@ -627,6 +703,7 @@ router.post('/addComment', function(req, res, next) {
             var comment = new Comment();
             comment.set('goods', order.get('goods'));
             comment.set('content', content);
+            comment.set('number', number);
             comment.save().then(function (comment) {
 
                 order.set('comment', comment);
@@ -761,8 +838,8 @@ router.post('/attention', function(req, res, next) {
                     'title': temp.get('name') == null ? '' : temp.get('name'),
                     'commentNumber' : temp.get('commentNumber') == null ? '0' : temp.get('commentNumber'),
                     'price' : temp.get('price') == null ? '' : temp.get('price'),
-                    'likeCommentNumber' : temp.get('commentLikeNumber') == null ? '0' : temp.get('commentLikeNumber')
-
+                    'likeCommentNumber' : temp.get('commentLikeNumber') == null ? '0' : temp.get('commentLikeNumber'),
+                    'content' : temp.get('content') == null ? '' : temp.get('content')
 
                 }
 
@@ -884,8 +961,8 @@ router.post('/history', function(req, res, next) {
                     'title': temp.get('name') == null ? '' : temp.get('name'),
                     'commentNumber' : temp.get('commentNumber') == null ? '0' : temp.get('commentNumber'),
                     'price' : temp.get('price') == null ? '' : temp.get('price'),
-                    'likeCommentNumber' : temp.get('commentLikeNumber') == null ? '0' : temp.get('commentLikeNumber')
-
+                    'likeCommentNumber' : temp.get('commentLikeNumber') == null ? '0' : temp.get('commentLikeNumber'),
+                    'content' : temp.get('content') == null ? '' : temp.get('content')
 
                 }
 
