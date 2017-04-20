@@ -8,7 +8,7 @@ var Goods = AV.Object.extend('Goods');
 var User = AV.Object.extend('_User');
 var Order = AV.Object.extend('Order');
 var Comment = AV.Object.extend('Comment');
-var Attention = AV.Object.extend('Attenttion');
+var Attention = AV.Object.extend('Attention');
 var History = AV.Object.extend('History');
 
 router.post('/mineShopInfo', function(req, res, next) {
@@ -417,8 +417,8 @@ router.post('/back', function(req, res, next) {
                     'cover' : goods.get('topImage') == null ? '' : goods.get('topImage'),
                     'title': goods.get('name') == null ? '' : goods.get('name'),
                     'price' : goods.get('price') == null ? '' : goods.get('price'),
-                    'time' : timeString
-
+                    'time' : timeString,
+                    'status' : results[i].get('status')
                 }
 
                 data.push(temp);
@@ -492,8 +492,8 @@ router.post('/backForBuy', function(req, res, next) {
                     'cover' : goods.get('topImage') == null ? '' : goods.get('topImage'),
                     'title': goods.get('name') == null ? '' : goods.get('name'),
                     'price' : goods.get('price') == null ? '' : goods.get('price'),
-                    'time' : timeString
-
+                    'time' : timeString,
+                    'status' : results[i].get('status')
                 }
 
                 data.push(temp);
@@ -877,8 +877,8 @@ router.post('/attention', function(req, res, next) {
 
 router.post('/cancleAttention', function(req, res, next) {
 
-    uid = req.body.uid;
-    aid = req.body.aid;
+    var uid = req.body.uid;
+    var aid = req.body.aid;
 
     var query = new AV.Query(Attention);
     query.get(aid).then(function (attention) {
