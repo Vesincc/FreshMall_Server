@@ -1029,6 +1029,175 @@ router.post('/clearHishtory', function(req, res, next) {
 
 });
 
+router.post('/orderDetail', function(req, res, next) {
+
+    var oid = req.body.oid;
+    var uid = req.body.uid;
+
+    var query = new AV.Query(Order);
+    query.include('goods');
+    query.get(oid).then(function (order) {
+
+        var goods = order.get('goods');
+
+        var time = goods.get('createdAt');
+        var date = new Date(time);
+        var localeDateString = date.toLocaleDateString();
+        var localeTimeString = date.toLocaleTimeString();
+        var timeString = localeDateString + ' ' +localeTimeString;
+
+
+
+        var data = {
+
+            'id' : order.get('objectId'),
+            'gid' : goods.get('objectId'),
+            'cover' : goods.get('topImage') == null ? '' : goods.get('topImage'),
+            'title': goods.get('name') == null ? '' : goods.get('name'),
+            'price' : goods.get('price') == null ? '' : goods.get('price'),
+            'time' : timeString,
+            'name' : order.get('recevieName'),
+            'phone' : order.get('phone'),
+            'area' : order.get('area'),
+            'detailAddress' : order.get('detailAddress'),
+            'transportId' : order.get('transportId'),
+            'status' : order.get('status'),
+            'backReason' : order.get('feelback')
+
+        };
+
+        var wrap = {
+
+            'code' : 200,
+            'data' : data,
+            'message' : ''
+
+        };
+
+        res.send(wrap);
+
+    });
+
+
+});
+
+router.post('/startSend', function(req, res, next) {
+
+    var uid = req.body.uid;
+    var oid = req.body.oid;
+    var content = req.body.content;
+
+    var query = new AV.Query(Order);
+    query.get(oid).then(function (order) {
+
+        order.set('status', '3');
+        order.set('transportId', content);
+
+        order.save().then(function (sucess) {
+
+            var wrap = {
+
+                'code' : 200,
+                'data' : '',
+                'message' : '操作成功'
+
+            };
+
+            res.send(wrap);
+
+        });
+
+    });
+
+
+});  //运单号
+
+router.post('/backFinish', function(req, res, next) {
+
+    var uid = req.body.uid;
+    var oid = req.body.oid;
+
+    var query = new AV.Query(Order);
+    query.get(oid).then(function (order) {
+
+        order.set('status', '6');
+
+        order.save().then(function (sucess) {
+
+            var wrap = {
+
+                'code' : 200,
+                'data' : '',
+                'message' : '操作成功'
+
+            };
+
+            res.send(wrap);
+
+        });
+
+    });
+
+}); //金额计算
+
+router.post('/sureGet', function(req, res, next) {
+
+    var uid = req.body.uid;
+    var oid = req.body.oid;
+
+    var query = new AV.Query(Order);
+    query.get(oid).then(function (order) {
+
+        order.set('status', '4');
+
+        order.save().then(function (sucess) {
+
+            var wrap = {
+
+                'code' : 200,
+                'data' : '',
+                'message' : '操作成功'
+
+            };
+
+            res.send(wrap);
+
+        });
+
+    });
+
+});
+
+router.post('/refund', function(req, res, next) {
+
+    var uid = req.body.uid;
+    var oid = req.body.oid;
+    var content = req.body.content;
+
+    var query = new AV.Query(Order);
+    query.get(oid).then(function (order) {
+
+        order.set('status', '5');
+        order.set('feelback', content);
+
+        order.save().then(function (sucess) {
+
+            var wrap = {
+
+                'code' : 200,
+                'data' : '',
+                'message' : '操作成功'
+
+            };
+
+            res.send(wrap);
+
+        });
+
+    });
+
+});
+
 module.exports = router;
 
 function delAllData(all, index, res) {
