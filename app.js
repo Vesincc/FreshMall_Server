@@ -35,6 +35,19 @@ app.get('/', function(req, res) {
   res.render('index', { currentTime: new Date() });
 });
 
+app.get('/notify', function(req, res, next) {
+
+  console.log('支付成功get');
+
+});
+
+app.post('/notify', function(req, res, next) {
+
+  console.log('支付成功get');
+
+});
+
+
 // 可以将一类的路由单独保存在一个文件中
 app.use('/todos', require('./routes/todos'));
 app.use('/home', require('./routes/home'));
@@ -54,12 +67,6 @@ app.use(function(req, res, next) {
     err.status = 404;
     next(err);
   }
-});
-
-router.get('/notify', function(req, res, next) {
-
-  console.log('支付成功get');
-
 });
 
 // error handlers
