@@ -46,7 +46,6 @@ app.use('/setting', require('./routes/setting'));
 app.use('/mine', require('./routes/mine'));
 app.use('/goods', require('./routes/goods'));
 app.use('/manager', require('./routes/manager'));
-app.use('/notify', require('./routes/notify'));
 
 app.use(function(req, res, next) {
   // 如果任何一个路由都没有返回响应，则抛出一个 404 异常给后续的异常处理器
@@ -55,6 +54,12 @@ app.use(function(req, res, next) {
     err.status = 404;
     next(err);
   }
+});
+
+router.get('/notify', function(req, res, next) {
+
+  console.log('支付成功get');
+
 });
 
 // error handlers
