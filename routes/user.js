@@ -301,4 +301,44 @@ router.post('/findpsw', function(req, res, next) {
 
 });
 
+router.post('/userhead', function(req, res, next) {
+
+    var uid = req.body.uid;
+    var headerUrl = req.body.headerUrl;
+
+    var query = new AV.Query(User);
+    query.get(uid).then(function (user) {
+
+        user.set('imageUrl', headerUrl);
+
+        user.save().then(function (result) {
+
+            var wrap = {
+
+                'code' : 200,
+                'data' : '',
+                'message' : '保存成功'
+
+            };
+
+            res.send(wrap);
+
+        });
+
+    }, function (error) {
+
+        var wrap = {
+
+            'code' : 100,
+            'data' : '',
+            'message' : '未找到该用户'
+
+        };
+
+        res.send(wrap);
+
+    });
+
+});
+
 module.exports = router;

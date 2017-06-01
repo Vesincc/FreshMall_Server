@@ -566,11 +566,11 @@ router.post('/changePassword', function(req, res, next) {
     var query = new AV.Query(User);
     query.get(uid).then(function (user) {
 
-        console.log(user.get('password'));
+        console.log(user.get('psw'));
 
-        if (user.get('password') == oldPassword) {
+        if (user.get('psw') == oldPassword) {
 
-            user.set('password', newPassword);
+            user.set('psw', newPassword);
             user.save().then(function (success) {
 
                 var wrap = {

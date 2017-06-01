@@ -136,6 +136,8 @@ router.post('/goodsDetail', function(req, res, next) {
 
                     }
 
+                    console.log(imageArray);
+
                     var data = {
 
                         'id' : result.get('objectId'),
